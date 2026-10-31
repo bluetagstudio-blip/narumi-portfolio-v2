@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>給与計算</title>
+<style>
+:root{--green:#27664d;--dark:#193d30;--pale:#edf5f0;--ink:#20372d;--muted:#586b62;--line:#d7e1da;--red:#a32929;--amber:#815311}
+*{box-sizing:border-box}body{margin:0;background:#f6f8f5;color:var(--ink);font-family:"Yu Gothic","Meiryo",system-ui,sans-serif;font-size:18px;line-height:1.6}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--green);padding:11px 18px;border-radius:9px;font-weight:700;min-height:48px}button:hover{background:var(--pale)}button:disabled{opacity:.45;cursor:default}button.primary{background:var(--green);color:#fff;border-color:var(--green)}button.danger{color:var(--red)}input,select{border:1px solid #91a99b;background:#fffdf2;color:#173b2c;border-radius:6px;padding:9px 10px;min-height:46px}input:focus,select:focus,button:focus-visible,summary:focus-visible{outline:3px solid #d29c34;outline-offset:2px}input[aria-invalid=true]{border:2px solid var(--red);background:#fff2f1}input[type=checkbox]{min-height:22px;width:24px;vertical-align:middle}input[type=number]{width:140px}h1,h2,h3,p{margin:0}h1{font-size:30px;line-height:1.3}h2{font-size:25px}h3{font-size:21px}small,.small{font-size:15px}.muted{color:var(--muted)}.wrap{max-width:1510px;margin:auto;padding:26px 30px 60px}header{display:flex;justify-content:space-between;align-items:center;gap:22px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:14px}.mark{display:grid;place-items:center;background:var(--green);color:#fff;width:52px;height:52px;border-radius:14px;font-size:27px}.header-tools,.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.save{font-size:15px;color:var(--green);font-weight:700}.save.bad{color:var(--red)}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--green)}.intro{padding:25px 28px;border:1px solid var(--line);background:#fff;border-radius:14px;margin-bottom:22px}.intro p{margin-top:7px}.steps{display:flex;gap:22px;margin-top:16px;flex-wrap:wrap;font-size:16px;font-weight:700;color:var(--muted)}.steps b{background:var(--pale);padding:3px 9px;border-radius:50%;color:var(--green);margin-right:6px}nav{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--line)}nav button{border:0;border-radius:9px 9px 0 0;background:transparent;padding:13px 25px;color:var(--muted)}nav button.active{background:var(--green);color:#fff}.panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:24px;margin-bottom:20px}.selectors{display:flex;align-items:end;gap:22px;flex-wrap:wrap;margin-bottom:20px}label.field{display:flex;flex-direction:column;gap:6px;font-weight:700}.selectors select{min-width:235px}.month-nav{display:flex;gap:6px}.month-nav input{width:190px}.rate-box{margin-left:auto;background:var(--pale);padding:10px 18px;border-radius:9px}.rate-box strong{font-size:24px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.stat{padding:17px 20px;border:1px solid var(--line);border-radius:11px;background:#fff}.stat.main{background:var(--green);color:#fff;border-color:var(--green)}.stat .label{font-size:15px}.stat .value{display:block;font-size:25px;font-weight:800;margin-top:5px}.stat .sub{font-size:13px}.note{padding:12px 16px;background:var(--pale);border-radius:8px;margin:12px 0;font-size:16px}.warning{background:#fff6e5;color:#66440f;border:1px solid #ddc088}.error-banner{padding:14px 18px;background:#fff0ee;border:1px solid #e5a39c;color:var(--red);border-radius:9px;margin-bottom:18px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;text-align:left}th{background:var(--pale);font-size:15px;white-space:nowrap;padding:13px 10px}td{border-top:1px solid var(--line);padding:10px;vertical-align:top}tbody tr:nth-child(even){background:#fafcf9}#workTable{min-width:960px}#workTable th:nth-child(1){width:90px}#workTable th:nth-child(2),#workTable th:nth-child(3){width:100px}#workTable input.time{width:88px;text-align:center;font-variant-numeric:tabular-nums;font-size:19px}#workTable input.memo{width:145px;font-size:16px}.break-pair{display:flex;gap:4px;align-items:center;margin-bottom:5px}.break-pair input.time{width:81px!important;font-size:17px!important}.mini{font-size:14px;padding:3px 8px;min-height:32px;border-radius:6px}.remove-break{font-size:14px;padding:2px 7px;min-height:30px;color:var(--red)}.result{background:#f0f4f1;font-size:16px;min-width:120px}.result strong{display:block}.result small{display:block;color:var(--muted);font-size:12px}.day{font-size:20px;white-space:nowrap;font-weight:700}.day small{font-size:14px;font-weight:400}.sat{color:#285896}.sun{color:#b14b40}.row-error{font-size:14px;color:var(--red);font-weight:700;margin-top:7px;max-width:180px}.has-error{background:#fff5f3!important}.empty{color:#89948d}.section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:16px}.summary-table{min-width:1080px}.summary-table td{white-space:nowrap}.summary-table td:first-child{white-space:normal;min-width:155px;font-weight:700}.summary-table strong{color:var(--green)}.total-bar{padding:20px 24px;border-radius:10px;background:var(--pale);display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:18px}.total-bar strong{font-size:30px}.settings-table{min-width:620px}.settings-table input.name{width:100%;max-width:310px}.settings-table td:last-child{min-width:120px}details{border:1px solid var(--line);border-radius:10px;padding:15px 20px;background:#fff;margin:18px 0}summary{cursor:pointer;font-weight:700}details p,details ul,details ol{margin-top:12px}details li{margin:6px 0}.footer{font-size:14px;color:var(--muted);margin-top:24px}dialog{border:1px solid var(--line);border-radius:14px;max-width:680px;width:95%;padding:28px;color:var(--ink)}dialog::backdrop{background:#12271d88}dialog .actions{justify-content:flex-end;margin-top:20px}dialog p{margin:14px 0}.hidden,[hidden]{display:none!important}#printArea{display:none}.nowrap{white-space:nowrap}.badge{display:inline-block;padding:2px 10px;background:var(--pale);border-radius:20px;color:var(--green);font-size:14px;font-weight:700}.badge.error{background:#fff0ee;color:var(--red)}.backup-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 0;background:#fff8e9;padding:14px 18px;border-radius:9px;border:1px solid #e8d4a5}.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}.help-grid h3{margin-top:12px}#restoreInfo{white-space:pre-line;padding:14px;background:var(--pale);border-radius:8px}.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;border-radius:9px;padding:13px 24px;z-index:5;max-width:90%;box-shadow:0 5px 30px #0002}.month-status{margin-bottom:15px;font-weight:700}.rule-line{font-size:14px;color:var(--muted);margin:14px 0}.no-print-note{font-size:14px;color:var(--muted)}
+@media(max-width:900px){.wrap{padding:16px 12px}header{align-items:flex-start;flex-wrap:wrap}.stats{grid-template-columns:1fr 1fr}.rate-box{margin-left:0}nav button{padding:12px 13px}.panel{padding:16px}.help-grid{grid-template-columns:1fr}.intro{padding:20px}.steps{gap:10px}.total-bar{flex-wrap:wrap}}
+@page{size:A4 portrait;margin:12mm}
+@media print{body{background:#fff;color:#000;font-size:9pt;line-height:1.35}body>*{display:none!important}body>#printArea{display:block!important}#printArea h1{font-size:18pt;margin-bottom:4mm}#printArea h2{font-size:12pt;margin-bottom:3mm}#printArea table{width:100%;table-layout:fixed}#printArea th,#printArea td{border:1px solid #aaa;padding:2mm 1mm;font-size:8pt;word-break:break-word;white-space:normal;vertical-align:top}#printArea th{background:#eee}#printArea tr{break-inside:avoid}#printArea thead{display:table-header-group}#printArea .print-total{font-size:13pt;font-weight:700;margin:5mm 0}#printArea .print-note{font-size:8pt;margin:3mm 0}#printArea .print-error{color:#8c1616;font-weight:700}#printArea .detail-table th,#printArea .detail-table td{font-size:8pt;padding:1.5mm 1mm}#printArea .detail-table td:last-child{font-size:7pt}#printArea .page-block{break-after:page}#printArea .page-block:last-child{break-after:auto}}
+#workTotals td{background:#e4f1e8;border-top:3px solid var(--green);padding:18px 10px;font-size:20px}#workTotals strong{color:var(--dark);font-size:22px}#workTotals td:nth-child(4) strong{font-size:25px;white-space:nowrap}@media print{#printArea tfoot{display:table-row-group}#printArea tfoot td{font-weight:700;background:#eee}#printArea tfoot .small{font-size:8pt}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+<header><div class="brand"><div class="mark" aria-hidden="true">¥</div><div><h1>給与計算 <span style="font-size:12px;opacity:.75">DEMO</span></h1><div class="small muted">紙のタイムカードから、かんたん集計</div></div></div><div class="header-tools"><div id="saveStatus" class="save" role="status" aria-live="polite">保存を確認中</div><button class="primary" id="backupBtn">バックアップ保存</button><button id="restoreBtn">復元</button><button class="primary" id="monthPdfBtn">全員の月次PDFを保存</button><button id="helpBtn">使い方</button></div></header>
+<div id="storageWarning" class="error-banner" role="alert" hidden></div>
+<p id="rawRecovery" hidden><button id="rawRecoveryBtn" class="danger">読込できなかった保存データを退避</button><span class="small">元データをそのまま保存します。通常のバックアップは現在の画面の内容を保存します。</span></p>
+<section class="intro"><p style="font-weight:700;color:#18664c">ポートフォリオ公開用デモ｜表示される氏名・勤務記録はすべて架空のデータです。入力内容はこのブラウザ内だけに保存され、本番環境には送信されません。</p><div class="eyebrow">毎月の給与計算を、ひとつの画面で</div><h2>時刻を入力するだけで、自動計算。</h2><p class="muted">黄色の欄に入力してください。緑・グレーの欄は自動計算です。</p><div class="steps"><span><b>1</b>年月・従業員を選ぶ</span><span><b>2</b>時刻を入力</span><span><b>3</b>月別集計を確認</span><span><b>4</b>印刷・保存</span></div></section>
+<nav aria-label="画面切替"><button data-tab="work" class="active" aria-current="page">勤務入力</button><button data-tab="summary">月別集計</button><button data-tab="settings">従業員設定</button></nav>
+<div class="selectors" id="selectors"><label class="field">対象年月<div class="month-nav"><button id="prevMonth" aria-label="前の月">‹</button><input id="month" type="month" min="2000-01" max="2199-12" aria-label="対象年月"><button id="nextMonth" aria-label="次の月">›</button></div></label><label class="field" id="employeeField">従業員<select id="employee" aria-label="従業員"></select></label><div class="rate-box" id="rateBox"><div class="small">この月に保存された基本時給</div><strong id="monthRate"></strong><span class="small"> ／時間</span><div class="small">深夜時給：<span id="monthNightRate"></span>（1円未満切り捨て）</div><div><button id="editMonthRate" class="mini">この月の時給を修正</button></div></div><div class="rate-box" id="salaryBox" hidden><label class="field">この月の月給（円・任意）<input id="salaryInput" type="number" min="0" max="100000000" step="1" placeholder="月給を入力"></label><div class="small">月給 ÷ 30分単位の計算対象時間で時給換算</div></div></div>
+<section id="workView"><div id="workStats" class="stats"></div><div class="panel"><div class="section-head"><div><h2 id="workTitle">勤務入力</h2><p class="small muted">1730 → 17:30 ／ 003 → 0:03（3桁はEnterで整形）／ 深夜0時は0:00（退勤が出勤より早い時刻なら翌日扱い）</p></div><div class="actions"><button id="resetEndsBtn" class="danger" title="表示中の従業員・月の退勤時刻だけを消します">リセット</button><button id="undoResetBtn" disabled title="リセット前の退勤時刻に戻します">戻る</button><button class="primary" id="detailPdfBtn">この人の月次PDFを保存</button><button id="detailPrintBtn">この人の明細を印刷</button><button id="detailCsvBtn">勤務明細CSV</button></div></div><div id="workStatus" class="month-status" aria-live="polite"></div><p class="small muted">リセット：表示中の人・月の退勤時刻だけを消します。戻る：リセット前の退勤時刻を復元します。戻る履歴は、このページを閉じる・再読込するまで有効です。</p><div class="note">Enterキーで次の入力欄へ進めます（出勤→退勤→翌日の出勤）。メモは必要なときだけクリックして入力できます。空欄でBackspaceを押すと前の欄へ戻ります。文字があるときは通常どおり削除できます。Shift＋Enterでも前の欄へ戻れます。<br>出勤の初期値：佐藤花子・鈴木美咲は17:00、森田和也は空欄、その他は18:00。必要に応じて訂正してください。退勤未入力の初期値だけの日は、勤務に数えません。</div><div class="table-wrap"><table id="workTable"><thead><tr><th>日付</th><th>出勤</th><th>退勤</th><th>実働時間<br><small>入力どおり</small></th><th id="paidTimeHeading">給与対象時間<br><small>出勤切り上げ・退勤切り捨て（各30分単位）</small></th><th id="dayAmountHeading">日額（参考）</th><th>メモ・消去</th></tr></thead><tbody id="workBody"></tbody><tfoot id="workTotals"></tfoot></table></div><p id="salaryRule" class="rule-line" hidden>月給制の分析：打刻どおりの実働時間と、出勤切り上げ・退勤切り捨て（各30分単位）の計算対象時間を表示します。時給換算＝この月の月給 ÷ 計算対象時間。月給は固定額で、勤務時刻による日割り・深夜割増の追加計算は行いません。月給が未入力でも勤務時間は記録できます。</p><p id="hourlyRule" class="rule-line">計算ルール：出勤時刻を30分単位で切り上げ、退勤時刻を30分単位で切り捨ててから通常・深夜を計算（全員共通）。深夜22:00〜翌5:00の時給は、基本時給×1.25の1円未満を切り捨て（例：1,023円→1,278円）。日額表示は小数第2位までの参考値です。内部では端数を保持し、1人ごとの月合計で1円未満を四捨五入します。</p></div></section>
+<section id="summaryView" hidden><div class="panel"><div class="section-head"><div><h2 id="summaryTitle">月別集計</h2><p class="muted small">控除前の給与計算額</p></div><div class="actions"><button class="primary" id="summaryPdfBtn">全員の月次PDFを保存</button><button id="summaryCsvBtn">全員分CSV</button><button class="primary" id="summaryPrintBtn">全員分一覧を印刷</button></div></div><div id="summaryStatus" class="month-status"></div><div class="table-wrap"><table class="summary-table"><thead><tr><th>従業員</th><th>出勤日数</th><th>実働時間</th><th>対象通常時間</th><th>対象深夜時間</th><th>通常給与</th><th>深夜給与</th><th>月の給与計算額</th><th>月給の時給換算</th></tr></thead><tbody id="summaryBody"></tbody></table></div><div id="grandTotal" class="total-bar"></div><p class="rule-line">通常給与・深夜給与の内訳は小数第2位までの参考表示。月額は内訳を丸めず合算後に四捨五入。全員合計は各人の月額の合計です。</p><div class="note warning">税金、社会保険料、交通費、時間外・休日割増などは含みません。これは「控除前の給与計算額」です。</div></div></section>
+<section id="settingsView" hidden><div class="panel"><div class="section-head"><h2>従業員設定</h2><button class="primary" id="addEmployeeBtn">＋ 従業員を追加</button></div><div class="note">ここの名前・時給は、これから新しく作成する月の初期値です。作成済みの月は変わりません。各行の「変更を保存」を押して反映してください。月途中の時給変更の自動按分には対応していません。この月の訂正は「勤務入力 → この月の時給を修正」から行えます。</div><div class="table-wrap"><table class="settings-table"><thead><tr><th>従業員名</th><th>給与区分・基本時給（円）</th><th>変更を保存</th></tr></thead><tbody id="settingsBody"></tbody></table></div><p class="small muted">名前も月ごとに保持します。過去の入力を失わないよう、従業員の削除機能は設けていません。</p></div><div class="panel"><h3>保存について</h3><p>データは、このPCのこのブラウザ内に保存されます。同じファイルを、同じ場所・同じブラウザで開いてください。</p><p class="note warning">HTMLファイルだけを別のPCへ渡しても、入力済みデータは移りません。移行時は「バックアップ保存」で作成したJSONファイルも渡して、新しいPCで「復元」してください。</p></div></section>
+<div class="backup-strip"><div><strong>入力後はバックアップも保存しましょう</strong><div id="backupInfo" class="small">ブラウザ内の保存だけでは、データを完全には守れません。</div></div><button id="backupBottomBtn">バックアップ保存</button></div>
+<details id="help"><summary>はじめての方へ・使い方・計算ルール</summary><div class="help-grid"><div><h3>使い始める</h3><ol><li>「給与計算.html」をPCの決めた場所に保存します。</li><li>ファイルをChromeまたはEdgeで開きます。インターネット・契約・APIキーは不要です。</li><li>年月と従業員を選び、出勤・退勤を入力します。入力のたびに保存状態を確認してください。</li><li>「月別集計」で確認し、「全員分一覧を印刷」を押します。</li></ol><h3>バックアップと別PCへの移行</h3><ol><li>「バックアップ保存」を押して、JSONファイルをダウンロードします。</li><li>ダウンロード先にファイルがあることを確認し、USBなどPCの外にもコピーします。</li><li>別PCではHTMLを開き「復元」からJSONを選びます。</li><li>内容を確認し、現在のデータも退避してから復元します。全データが置き換わります。</li></ol><p>HTMLの移動・改名、別ブラウザ、シークレットモード、ブラウザデータの削除で保存内容を参照できなくなる場合があります。毎回の作業後と月締め時にJSONを保存してください。</p></div><div><h3>入力と集計</h3><p>森田和也は月給制です。時給の登録は不要です。月給を任意で入力し、出退勤を記録すると「月給÷30分単位の計算対象時間」で時給換算を表示します。月給は月ごとに保持し、未入力は0円と区別します。これは1時間あたりの人件費の目安です。</p><ul><li>出勤は佐藤花子・鈴木美咲が17:00、森田和也は空欄、その他が18:00の初期値です。退勤を入力すると勤務として集計します。出勤時刻は自由に訂正できます。出勤を手動で変更したのに退勤が空欄の場合は、入力漏れとしてエラーを表示します。保存済みの時刻はそのまま保持します。</li><li>深夜0時は0:00、翌1時は1:00と入力できます。例：出勤16:40・退勤0:03は、翌日の0:03までとして計算します。退勤が出勤より早い時刻なら翌日扱いです。同時刻はエラーです。従来の24:00・25:00表記も読み込めます（入力範囲0:00〜47:59）。</li><li>実働＝退勤−出勤（日付を跨ぐ場合は翌日まで）。深夜は毎日22:00〜翌5:00で、当日0:00〜5:00も対象です。</li><li>休憩の入力欄はありません。給与計算では全員の出勤を30分単位で切り上げ（14:53→15:00、15:22→15:30、15:35→16:00）、退勤を30分単位で切り捨てます（23:03・23:16→23:00、23:33・23:41→23:30）。00分・30分ちょうどはそのままです。切り上げ後の出勤が切り捨て後の退勤以降になる短い勤務は、計算対象0分とします。入力した実際の退勤時刻は保持し、実働時間は入力どおり表示します。この版で開いた入力済みの月も、このルールで再計算します。旧版で休憩を登録したデータは保持し、給与対象の勤務時間と重なる休憩を差し引きます。メモ欄の下に旧記録と消去ボタンを表示します。</li><li>深夜時給は基本時給×1.25の1円未満を切り捨てます（例：1,023円×1.25＝1,278.75円→1,278円）。月額のみ1円未満を四捨五入します。</li><li>日付を跨いでも出勤日の月へ全額計上。月末から翌月の勤務も分割しません。</li><li>日ごとの金額・内訳は参考表示。エラーが1つでもある月は全員の金額を未確定にし、集計時間は有効な行だけの参考値として表示します。</li><li>時給は正の整数（円）。作成済み月の時給は固定で、明示的な月の訂正だけが反映されます。</li></ul><p class="note warning">店舗指定の計算ルールを実装しています。法令適合性を保証するものではありません。控除、交通費、時間外・休日割増等は別途確認・計算が必要です。</p><h3>月次PDF・印刷・CSV</h3><p>「全員の月次PDFを保存」で、選択中の月の給与一覧と全員の勤務表を1つのPDFでダウンロードできます。「この人の月次PDFを保存」は表示中の人のみです。A4縦、給与一覧＋1人1ページで、PCに毎月保存できます。</p><p>一覧・個人明細はA4縦向けです。印刷画面では用紙A4・倍率100%または「用紙に合わせる」を選び、不要ならヘッダー／フッターをオフにしてください。勤務明細はメモや休憩が多い場合、複数ページになります。CSVは日本語UTF-8 BOM付きでExcelで開けます。</p></div></div></details>
+<details><summary>この版の動作確認（2026年10月19日）</summary><p>出勤の30分単位切り上げ・退勤の切り捨て、22時以降の25％割増、0時表記での翌日退勤、月合計、月次PDFの日本語表示・A4のページ構成、印刷・CSV用の計算結果を確認しています。実際の打刻は保持し、入力済みの月も新しいルールで再計算します。</p><p>実際のPCでの保存・ダウンロード・紙への印刷は、使い始めに確認してください。旧版で入力済みの場合は、旧版の「バックアップ保存」でJSONを保存し、この版の「復元」から読み込めます。</p></details>
+<footer class="footer">給与計算 v1.6 ／ 外部通信なし・ブラウザ内保存 ／ 控除前の給与計算額</footer>
+</div>
+<input id="restoreFile" type="file" accept=".json,application/json" hidden>
+<dialog id="restoreDialog"><h2>バックアップから復元</h2><p>次の内容で、現在の全データを置き換えます。</p><div id="restoreInfo"></div><p><button id="retreatBtn">① 現在のデータを退避保存</button></p><label><input id="retreatCheck" type="checkbox"> ダウンロード先に退避用JSONがあることを確認しました</label><p class="small muted">ダウンロード完了は自動確認できません。フォルダで確認してください。</p><div class="actions"><button id="restoreCancel">キャンセル</button><button id="restoreConfirm" class="primary" disabled>② 内容を置き換えて復元</button></div></dialog>
+<dialog id="rateDialog"><h2>この月の時給を修正</h2><p id="rateDialogInfo"></p><label class="field">この月だけの基本時給（円）<input id="rateInput" type="number" min="1" max="100000" step="1"></label><p class="note warning">この月の給与が再計算されます。ほかの月や従業員設定には影響しません。</p><div class="actions"><button id="rateCancel">キャンセル</button><button id="rateSave" class="primary">修正して再計算</button></div></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="printArea"></div>
+<script>
+'use strict';
+// 金額は「円×240」の整数で保持。通常: 時給×分×4、深夜: 1円未満切り捨て済みの深夜時給×分×4。
+const KEY='portfolio-payroll-demo.v1';
+const INITIAL=[['佐藤花子',1100],['山田太郎',1023],['鈴木美咲',1023],['田中一郎',1023],['高橋健太',1023],['伊藤さくら',1050],['小林大輔',1050]];
+const SALARIED_ID='eDemoSalary';
+const isSalary=p=>p?.payType==='salary';
+const validSalary=v=>v===null||(Number.isInteger(v)&&v>=0&&v<=100000000);
+const salaryEmployee=()=>({id:SALARIED_ID,name:'森田和也',payType:'salary',rate:null});
+const staffPerson=e=>isSalary(e)?{name:e.name,payType:'salary',rate:null,monthlySalary:null,days:{}}:{name:e.name,rate:e.rate,days:{}};
+const hourlyEquivalent=t=>t.effectiveHourly===null?'—':t.effectiveHourly.toLocaleString('ja-JP',{maximumFractionDigits:2})+'円／時';
+const salaryValue=p=>p.monthlySalary===null?'月給未入力':yen(p.monthlySalary);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=v=>JSON.parse(JSON.stringify(v));
+const localMonth=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+const validMonth=m=>typeof m==='string'&&/^(20\d\d|21\d\d)-(0[1-9]|1[0-2])$/.test(m);
+const daysIn=m=>new Date(Number(m.slice(0,4)),Number(m.slice(5)),0).getDate();
+const monthLabel=m=>Number(m.slice(0,4))+'年'+Number(m.slice(5))+'月';
+const duration=n=>Math.floor(n/60)+'時間'+n%60+'分';
+const yen=n=>n.toLocaleString('ja-JP')+'円';
+const exactYen=n=>(n/240).toLocaleString('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2})+'円';
+const rounded=n=>Math.floor((n+120)/240);
+const nightRate=rate=>Math.floor(rate*5/4);
+const nonempty=v=>typeof v==='string'&&v.trim()!=='';
+function parseTime(value){
+ const t=String(value??'').trim().replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-65248)).replace(/：/g,':');
+ if(!t)return null;
+ let h,m;
+ if(/^\d{3,4}$/.test(t)){h=Number(t.slice(0,-2));m=Number(t.slice(-2));}
+ else {const a=t.match(/^(\d{1,2}):(\d{2})$/);if(!a)return NaN;h=Number(a[1]);m=Number(a[2]);}
+ return h<=47&&m<=59?h*60+m:NaN;
+}
+function normalized(t){const n=parseTime(t);return n===null?'':Number.isFinite(n)?String(Math.floor(n/60))+':'+String(n%60).padStart(2,'0'):String(t).trim();}
+function nightMinutes(a,b){let n=0;for(let d=-1;d<=2;d++){const s=d*1440+1320,e=(d+1)*1440+300;n+=Math.max(0,Math.min(b,e)-Math.max(a,s));}return n;}
+function calcDay(row,rate){
+ const r=row||{start:'',end:'',breaks:[],memo:''};
+ const touched=nonempty(r.start)||nonempty(r.end)||(r.breaks||[]).some(b=>nonempty(b.start)||nonempty(b.end));
+ const out={worked:false,nextDay:false,errors:[],actual:0,normal:0,night:0,paidNormal:0,paidNight:0,normalUnits:0,nightUnits:0,units:0,paidStart:'',paidEnd:'',paidRangeEmpty:false};
+ // 初期表示だけの出勤時刻は、退勤の入力までは勤務実績にしない。
+ if(r.startPreset===true&&!nonempty(r.end)&&!(r.breaks||[]).some(b=>nonempty(b.start)||nonempty(b.end)))return out;
+ if(r.endReset===true&&!nonempty(r.end))return out;
+ if(!touched)return out;
+ const a=parseTime(r.start);let b=parseTime(r.end);
+ if(a===null||b===null)out.errors.push('出勤と退勤の両方を入力してください。');
+ if((a!==null&&!Number.isFinite(a))||(b!==null&&!Number.isFinite(b)))out.errors.push('時刻を確認してください（00:00〜47:59）。');
+ if(Number.isFinite(a)&&Number.isFinite(b)){
+  if(b<a)b+=Math.ceil((a-b)/1440)*1440;
+  if(b===a)out.errors.push('出勤と退勤が同じ時刻です。退勤を確認してください。');
+  out.nextDay=Math.floor(b/1440)>Math.floor(a/1440);
+ }
+ const spans=[];
+ (r.breaks||[]).forEach((br,i)=>{
+  let x=parseTime(br.start),y=parseTime(br.end);if(x===null&&y===null)return;
+  const tag='休憩'+(i+1)+'：';
+  if(x===null||y===null){out.errors.push(tag+'開始と終了の両方を入力してください。');return;}
+  if(!Number.isFinite(x)||!Number.isFinite(y)){out.errors.push(tag+'存在する時刻を入力してください（00:00〜47:59）。');return;}
+  if(y===x){out.errors.push(tag+'開始と終了が同じ時刻です。終了を確認してください。');return;}
+  // 0時表記の休憩を、出勤から退勤までの連続した時間軸へ対応させる。
+  if(Number.isFinite(a)&&x<a)x+=Math.ceil((a-x)/1440)*1440;
+  if(y<x)y+=Math.ceil((x-y)/1440)*1440;
+  if(y<=x){out.errors.push(tag+'終了は開始より後にしてください。');return;}
+  if(Number.isFinite(a)&&Number.isFinite(b)&&(x<a||y>b))out.errors.push(tag+'開始または終了が勤務時間の外にあります。順序・時刻を確認してください。');
+  spans.push([x,y]);
+ });
+ spans.sort((x,y)=>x[0]-y[0]);
+ for(let i=1;i<spans.length;i++)if(spans[i][0]<spans[i-1][1])out.errors.push('複数の休憩が重複しています。');
+ if(out.errors.length)return out;
+ let rest=0,nightRest=0;for(const [x,y] of spans){rest+=y-x;nightRest+=nightMinutes(x,y);}
+ out.worked=true;out.actual=b-a-rest;out.night=nightMinutes(a,b)-nightRest;out.normal=out.actual-out.night;
+ // 打刻は保持し、全員の出勤を30分単位で切り上げ、退勤を切り捨てる。
+ const paidStart=Math.ceil(a/30)*30,paidEnd=Math.floor(b/30)*30,intervalEnd=Math.max(paidStart,paidEnd);
+ let paidRest=0,paidNightRest=0;
+ for(const [x,y] of spans){const lo=Math.max(paidStart,x),hi=Math.min(intervalEnd,y);if(hi>lo){paidRest+=hi-lo;paidNightRest+=nightMinutes(lo,hi);}}
+ out.paidNight=nightMinutes(paidStart,intervalEnd)-paidNightRest;
+ out.paidNormal=intervalEnd-paidStart-paidRest-out.paidNight;
+ const clock=n=>String(Math.floor(n/60)%24)+':'+String(n%60).padStart(2,'0');
+ out.paidStart=clock(paidStart);out.paidEnd=clock(paidEnd);out.paidRangeEmpty=paidEnd<=paidStart;
+ out.normalUnits=rate*out.paidNormal*4;out.nightUnits=nightRate(rate)*out.paidNight*4;out.units=out.normalUnits+out.nightUnits;
+ return out;
+}
+function calcPerson(p){
+ const t={days:0,actual:0,paidNormal:0,paidNight:0,normalUnits:0,nightUnits:0,units:0,errors:[]};
+ for(const [day,row] of Object.entries(p.days)){const c=calcDay(row,p.rate);if(c.errors.length)t.errors.push({day:Number(day),messages:c.errors});if(c.worked){t.days++;for(const k of ['actual','paidNormal','paidNight','normalUnits','nightUnits','units'])t[k]+=c[k];}}
+ t.effectiveHourly=null;
+ if(isSalary(p)){
+  t.normalUnits=0;t.nightUnits=0;t.units=(p.monthlySalary??0)*240;
+  const calculationMinutes=t.paidNormal+t.paidNight;
+  if(p.monthlySalary!==null&&calculationMinutes>0&&!t.errors.length)t.effectiveHourly=p.monthlySalary*60/calculationMinutes;
+ }
+ return t;
+}
+function calcMonth(m){const rows=Object.entries(m.people).map(([id,p])=>({id,p,t:calcPerson(p)}));return {rows,errors:rows.reduce((s,r)=>s+r.t.errors.length,0),total:rows.reduce((s,r)=>s+rounded(r.t.units),0),missingSalary:rows.filter(r=>isSalary(r.p)&&r.p.monthlySalary===null).length};}
+function newData(){
+ const employees=[...INITIAL.map(([name,rate],i)=>({id:'e'+(i+1),name,rate})),salaryEmployee()];
+ const month=localMonth(),people={};
+ employees.forEach((e,i)=>{
+  const p=staffPerson(e);p.days={};
+  for(let d=2;d<=Math.min(daysIn(month),25);d+=3){
+   const start=i===7?'10:00':i===0||i===2?'17:00':'18:00';
+   const end=i===7?'19:00':d%2?'23:30':'22:30';
+   p.days[String(d)]={start,end,memo:'サンプル勤務',breaks:[],startPreset:false,endReset:false};
+  }
+  if(i===7)p.monthlySalary=245000;
+  people[e.id]=p;
+ });
+ return {app:'給与計算',version:1,employees,months:{[month]:{people}},ui:{month,employee:'e1'},updatedAt:null,lastBackupAt:null};
+}
+function validateData(raw){
+ const fail=m=>{throw new Error(m)};
+ const obj=v=>v&&typeof v==='object'&&!Array.isArray(v);
+ const str=(v,max)=>typeof v==='string'&&v.length<=max;
+ const rate=v=>Number.isInteger(v)&&v>=1&&v<=100000;
+ if(!obj(raw)||raw.app!=='給与計算'||raw.version!==1)fail('このアプリ用の対応したバックアップではありません。');
+ if(!Array.isArray(raw.employees)||raw.employees.length<1||raw.employees.length>200)fail('従業員情報が不正です（1〜200名）。');
+ const ids=new Set(),employees=[];
+ for(const e of raw.employees){if(!obj(e)||!/^e[a-zA-Z0-9_-]{1,60}$/.test(e.id)||ids.has(e.id)||!str(e.name,100)||!e.name.trim()||(e.payType!==undefined&&!['hourly','salary'].includes(e.payType))||(!isSalary(e)&&!rate(e.rate)))fail('従業員名・給与区分・時給・IDを確認してください。');ids.add(e.id);employees.push(isSalary(e)?{id:e.id,name:e.name.trim(),payType:'salary',rate:null}:{id:e.id,name:e.name.trim(),rate:e.rate});}
+ if(!obj(raw.months)||Object.keys(raw.months).length>2400)fail('月データが不正です。');
+ const months={};
+ for(const [mk,m] of Object.entries(raw.months)){
+  if(!validMonth(mk)||!obj(m)||!obj(m.people)||Object.keys(m.people).length>200)fail('対象年月の形式が不正です。');
+  const people={};
+  for(const [id,p] of Object.entries(m.people)){
+   if(!ids.has(id)||!obj(p)||!str(p.name,100)||!p.name.trim()||(p.payType!==undefined&&!['hourly','salary'].includes(p.payType))||(!isSalary(p)&&!rate(p.rate))||(isSalary(p)&&(!validSalary(p.monthlySalary??null)||!isSalary(employees.find(e=>e.id===id))))||!obj(p.days)||Object.keys(p.days).length>31)fail('月ごとの従業員データが不正です。');
+   const days={};
+   for(const [dk,r] of Object.entries(p.days)){
+    if(!/^[1-9]\d?$/.test(dk)||+dk>daysIn(mk)||!obj(r)||!str(r.start,30)||!str(r.end,30)||!str(r.memo,1000)||!Array.isArray(r.breaks)||r.breaks.length>20)fail('勤務日のデータが不正です。');
+    const breaks=r.breaks.map(b=>{if(!obj(b)||!str(b.start,30)||!str(b.end,30))fail('休憩データが不正です。');return {start:b.start,end:b.end};});
+    days[dk]={start:r.start,end:r.end,memo:r.memo,breaks,startPreset:r.startPreset===true,endReset:r.endReset===true};
+   }
+   people[id]=isSalary(p)?{name:p.name,payType:'salary',rate:null,monthlySalary:p.monthlySalary??null,days}:{name:p.name,rate:p.rate,days};
+  }
+  if(!Object.keys(people).length)fail('従業員のない月は復元できません。');months[mk]={people};
+ }
+ const ui={month:validMonth(raw.ui?.month)?raw.ui.month:localMonth(),employee:ids.has(raw.ui?.employee)?raw.ui.employee:employees[0].id};
+ return {app:'給与計算',version:1,employees,months,ui,updatedAt:str(raw.updatedAt,50)?raw.updatedAt:null,lastBackupAt:str(raw.lastBackupAt,50)?raw.lastBackupAt:null};
+}
+function correctStaffName(state){for(const e of state.employees)if(e.id==='e3'&&e.name==='鈴木美咲')e.name='鈴木美咲';for(const m of Object.values(state.months)){const p=m.people.e3;if(p?.name==='鈴木美咲')p.name='鈴木美咲';}}
+function ensureSalaryStaff(state){
+ let e=state.employees.find(e=>e.id===SALARIED_ID)||state.employees.find(e=>e.name==='森田和也');
+ if(!e){e=salaryEmployee();state.employees.push(e);}
+ e.payType='salary';e.rate=null;
+ for(const m of Object.values(state.months)){
+  if(!m.people[e.id])m.people[e.id]=staffPerson(e);
+  else {const p=m.people[e.id];p.payType='salary';p.rate=null;p.monthlySalary=p.monthlySalary??null;
+   for(const r of Object.values(p.days)){
+    if(r.startPreset===true&&normalized(r.start)==='18:00'&&!nonempty(r.end)&&r.endReset!==true&&!(r.breaks||[]).some(b=>nonempty(b.start)||nonempty(b.end)))r.start='';
+   }
+  }
+ }
+}
+let data=newData(),tab='work',storageBlocked=false,storageConflict=false,pendingRestore=null,retreatStarted=false,rawBroken=null,toastTimer,bootMessage='',persisted=false;
+try{const s=localStorage.getItem(KEY);if(s)data=validateData(JSON.parse(s));}catch(e){storageBlocked=true;bootMessage='保存データを読み込めません。既存データは上書きしていません。バックアップを保存し、必要ならJSONから復元してください。';try{rawBroken=localStorage.getItem(KEY)}catch(_){}}
+function ensureMonth(m){if(!data.months[m]){const people={};data.employees.forEach(e=>people[e.id]=staffPerson(e));data.months[m]={people};}}
+correctStaffName(data);ensureSalaryStaff(data);ensureMonth(data.ui.month);
+function ensurePerson(){const m=data.months[data.ui.month];if(!m.people[data.ui.employee]){const e=data.employees.find(x=>x.id===data.ui.employee);m.people[e.id]=staffPerson(e);}}
+ensurePerson();
+const person=()=>data.months[data.ui.month].people[data.ui.employee];
+function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4200);}
+function storageError(message){persisted=false;$('saveStatus').textContent='保存できていません';$('saveStatus').className='save bad';$('storageWarning').hidden=false;$('storageWarning').textContent=message;$('rawRecovery').hidden=rawBroken===null;}
+function save(){
+ if(storageBlocked||storageConflict){storageError(storageConflict?'別のタブでデータが変更されました。この画面の自動保存を停止しています。必要ならこの画面の内容をバックアップ保存し、再読込してください。':'保存データを保護するため自動保存を停止しています。JSONバックアップで退避してください。復元すると保存を再試行します。');return false;}
+ data.updatedAt=new Date().toISOString();
+ try{localStorage.setItem(KEY,JSON.stringify(data));persisted=true;$('saveStatus').textContent='✓ 保存済み '+new Date().toLocaleTimeString('ja-JP');$('saveStatus').className='save';$('storageWarning').hidden=true;$('rawRecovery').hidden=true;return true;}
+ catch(e){storageError('ブラウザ内に保存できません。画面を閉じずに「バックアップ保存」でJSONを保存してください。ブラウザの保存制限・空き容量も確認してください。');return false;}
+}
+function renderSelectors(){
+ $('month').value=data.ui.month;
+ $('employee').innerHTML=data.employees.map(e=>{const p=data.months[data.ui.month].people[e.id];return '<option value="'+e.id+'"'+(e.id===data.ui.employee?' selected':'')+'>'+esc(p?.name||e.name)+'</option>';}).join('');
+ const salaried=isSalary(person());
+ if(!salaried){$('monthRate').textContent=yen(person().rate);$('monthNightRate').textContent=yen(nightRate(person().rate));}
+ $('salaryBox').hidden=tab!=='work'||!salaried;
+ $('salaryInput').value=salaried?(person().monthlySalary??''):'';
+ $('salaryInput').setAttribute('aria-invalid','false');
+ $('employeeField').hidden=tab!=='work';$('rateBox').hidden=tab!=='work'||salaried;$('selectors').hidden=tab==='settings';
+}
+function showTab(which){tab=which;for(const name of ['work','summary','settings']){$(name+'View').hidden=which!==name;const b=document.querySelector('[data-tab="'+name+'"]');b.classList.toggle('active',which===name);if(which===name)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}renderSelectors();if(which==='summary')renderSummary();if(which==='settings')renderSettings();if(which==='work')renderWork();}
+function defaultStart(){if(isSalary(person()))return '';return data.ui.employee==='e1'||data.ui.employee==='e3'?'17:00':'18:00';}
+function blankRow(){return {start:defaultStart(),end:'',breaks:[],memo:'',startPreset:true};}
+function rowFor(day){const p=person();return p.days[day]||(p.days[day]=blankRow());}
+function weekday(day){return new Date(Number(data.ui.month.slice(0,4)),Number(data.ui.month.slice(5))-1,day).getDay();}
+const weekdayNames=['日','月','火','水','木','金','土'];
+function timeInput(field,value,day,idx){return '<input class="time" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="30" data-field="'+field+'"'+(idx!==undefined?' data-break="'+idx+'"':'')+' value="'+esc(value)+'" aria-label="'+day+'日 '+(idx!==undefined?'休憩'+(idx+1)+' ':'')+({start:'出勤',end:'退勤',breakStart:'開始',breakEnd:'終了'}[field])+'" placeholder="--:--">';}
+function dayResult(c){
+ if(c.errors.length)return ['—','—','未確定'];if(!c.worked)return ['—','—','—'];
+ const actual='<strong>'+duration(c.actual)+'</strong><small>'+(c.nextDay?'翌日退勤<br>':'')+'通常 '+duration(c.normal)+'<br>深夜 '+duration(c.night)+'</small>';
+ const paid='通常 '+duration(c.paidNormal)+'<br>深夜 '+duration(c.paidNight)+'<small>'+(c.paidRangeEmpty?'計算対象0分':'計算上 '+c.paidStart+'〜'+c.paidEnd)+'</small>';
+ return [actual,paid,isSalary(person())?'月給制':exactYen(c.units)];
+}
+function legacyBreakText(r){return (r.breaks||[]).filter(b=>b.start||b.end).map(b=>b.start+'〜'+b.end).join(' / ');}
+function exportMemo(r){const old=legacyBreakText(r);return r.memo+(old?'\n旧版の休憩記録：'+old:'');}
+function renderRow(day){
+ const r=person().days[day]||blankRow(),c=calcDay(r,person().rate),w=weekday(day),out=dayResult(c),old=legacyBreakText(r);
+ return '<tr data-day="'+day+'"'+(c.errors.length?' class="has-error"':'')+'><td><div class="day '+(w===0?'sun':w===6?'sat':'')+'">'+day+' <small>('+weekdayNames[w]+')</small></div></td><td>'+timeInput('start',r.start,day)+'</td><td>'+timeInput('end',r.end,day)+'</td><td class="result actual">'+out[0]+'</td><td class="result paid">'+out[1]+'</td><td class="result amount">'+out[2]+'<div class="row-error" id="rowError'+day+'">'+c.errors.map(esc).join('<br>')+'</div></td><td><input class="memo" data-field="memo" maxlength="1000" aria-label="'+day+'日 メモ" value="'+esc(r.memo)+'" placeholder="メモ">'+(old?'<div class="small">旧版の休憩記録：'+esc(old)+'<br><button class="mini danger" data-action="clearLegacyBreaks">旧記録を消して再計算</button></div>':'')+'<br><button class="mini danger" data-action="clearDay" tabindex="-1">この日を消去</button></td></tr>';
+}
+// 退勤リセットの取り消し履歴は、従業員・月ごとに保持する。
+const endResetHistory=new Map();
+const endResetKey=()=>data.ui.month+'|'+data.ui.employee;
+function renderResetButtons(){
+ $('resetEndsBtn').disabled=!Object.values(person().days).some(r=>nonempty(r.end));
+ $('undoResetBtn').disabled=!endResetHistory.has(endResetKey());
+}
+function resetEndTimes(){
+ const p=person(),entries=Object.entries(p.days).filter(([,r])=>nonempty(r.end));
+ if(!entries.length)return;
+ endResetHistory.set(endResetKey(),Object.fromEntries(entries.map(([day,r])=>[day,clone(r)])));
+ for(const [,r] of entries){r.end='';r.endReset=true;}
+ save();renderWork();toast(p.name+'・'+monthLabel(data.ui.month)+'の退勤時刻をリセットしました。「戻る」で復元できます。');
+}
+function undoEndReset(){
+ const key=endResetKey(),previous=endResetHistory.get(key);if(!previous)return;
+ const p=person();
+ for(const [day,r] of Object.entries(previous)){
+  if(!p.days[day])p.days[day]=clone(r);
+  else {p.days[day].end=r.end;p.days[day].endReset=r.endReset===true;}
+ }
+ endResetHistory.delete(key);save();renderWork();toast('リセット前の退勤時刻に戻しました。');
+}
+function renderWork(){
+ const salaried=isSalary(person());
+ $('paidTimeHeading').innerHTML='計算対象時間<br><small>出勤切り上げ・退勤切り捨て</small>';
+ $('dayAmountHeading').textContent=salaried?'給与区分':'日額（参考）';
+ $('salaryRule').hidden=!salaried;$('hourlyRule').hidden=salaried;
+ $('workTitle').textContent=monthLabel(data.ui.month)+'・'+person().name+(salaried?'（月給制）':'');
+ $('workBody').innerHTML=Array.from({length:daysIn(data.ui.month)},(_,i)=>renderRow(i+1)).join('');renderWorkStats();
+}
+function statusHtml(m){return m.errors?'<span class="badge error">未確定</span> 入力エラー：'+m.errors+'行。金額は未確定です。時間・日数は有効な行のみの参考値。':'<span class="badge">入力エラーなし</span> 金額は控除前の給与計算額です。未入力日は勤務なしとして集計。';}
+function personTotalMarkup(t,hasErrors){if(isSalary(person()))return '<tr><td colspan="3"><strong>この月の合計</strong><div class="small">出勤 '+t.days+'日</div></td><td><strong>'+duration(t.actual)+'</strong></td><td>通常 '+duration(t.paidNormal)+'<br>深夜 '+duration(t.paidNight)+'</td><td><div class="small">この月の月給</div><strong>'+salaryValue(person())+'</strong></td><td><div class="small">計算対象時間で時給換算</div><strong>'+hourlyEquivalent(t)+'</strong></td></tr>';return '<tr><td colspan="3"><strong>この月の合計</strong><div class="small">出勤 '+t.days+'日'+(hasErrors?' ／ 有効な行のみの参考値':'')+'</div></td><td><strong>'+duration(t.actual)+'</strong></td><td><strong>'+duration(t.paidNormal+t.paidNight)+'</strong><div class="small">通常 '+duration(t.paidNormal)+'<br>深夜 '+duration(t.paidNight)+'</div></td><td><div class="small">月の給与合計</div><strong>'+(hasErrors?'未確定':yen(rounded(t.units)))+'</strong></td><td><span class="small">控除前の給与計算額<br>月合計で四捨五入</span></td></tr>';}
+function renderWorkStats(){
+ const m=calcMonth(data.months[data.ui.month]),t=calcPerson(person());
+ const salaried=isSalary(person());
+ const cards=salaried?[
+  ['この月の月給',salaryValue(person()),'main','月給は固定額・任意入力'],
+  ['出勤日数',t.days+'日','',t.errors.length?'有効な行のみ':'入力済みの勤務日'],
+  ['実働時間',duration(t.actual),'','計算対象 '+duration(t.paidNormal+t.paidNight)],
+  ['時給換算（30分単位）',hourlyEquivalent(t),'',t.errors.length?'入力エラーを修正してください':person().monthlySalary===null?'月給を入力すると表示':t.paidNormal+t.paidNight===0?'計算対象時間が0分です':'月給 ÷ 計算対象時間']
+ ]:[['この人の月額（控除前）',m.errors?'未確定':yen(rounded(t.units)),'main',m.errors?'この月の入力エラーを修正してください':'月の合計で1円未満を四捨五入'],['出勤日数',t.days+'日','',m.errors?'有効な行のみ':'入力済みの勤務日'],['実働時間',duration(t.actual),'','出勤から退勤までの時間'],['給与計算対象時間',duration(t.paidNormal+t.paidNight),'','出勤切り上げ・退勤切り捨て（各30分単位）']];
+ $('workStats').innerHTML=cards.map(([l,v,cl,s])=>'<div class="stat '+cl+'"><div class="label">'+l+'</div><span class="value">'+v+'</span><span class="sub">'+s+'</span></div>').join('');
+ $('workStatus').innerHTML=salaried?(t.errors.length?'<span class="badge error">入力エラーあり</span> 実働時間は有効な行のみ。時給換算は未確定です。':'<span class="badge">月給制</span> 月給と実働時間から、1時間あたりの人件費を確認できます。'):statusHtml(m);renderResetButtons();
+ $('workTotals').innerHTML=personTotalMarkup(t,!!m.errors);
+}
+function updateRowResult(tr,day){
+ const c=calcDay(person().days[day],person().rate),out=dayResult(c);tr.classList.toggle('has-error',!!c.errors.length);tr.querySelector('.actual').innerHTML=out[0];tr.querySelector('.paid').innerHTML=out[1];tr.querySelector('.amount').innerHTML=out[2]+'<div class="row-error" id="rowError'+day+'">'+c.errors.map(esc).join('<br>')+'</div>';
+ tr.querySelectorAll('input.time').forEach(el=>{el.setAttribute('aria-invalid',c.errors.length?'true':'false');if(c.errors.length)el.setAttribute('aria-describedby','rowError'+day);else el.removeAttribute('aria-describedby');});renderWorkStats();
+}
+function renderSummary(){
+ const m=calcMonth(data.months[data.ui.month]);$('summaryTitle').textContent=monthLabel(data.ui.month)+' 給与一覧';$('summaryStatus').innerHTML=statusHtml(m);
+ $('summaryBody').innerHTML=m.rows.map(({id,p,t})=>isSalary(p)?salarySummaryRow(p,t,m):'<tr><td>'+esc(p.name)+'<br><span class="small muted">時給 '+yen(p.rate)+'</span>'+(t.errors.length?'<br><button class="mini danger" data-open="'+id+'">エラー '+t.errors.length+'行を確認</button>':'')+'</td><td>'+t.days+'日</td><td>'+duration(t.actual)+'</td><td>'+duration(t.paidNormal)+'</td><td>'+duration(t.paidNight)+'</td><td>'+(m.errors?'未確定':exactYen(t.normalUnits))+'</td><td>'+(m.errors?'未確定':exactYen(t.nightUnits))+'</td><td><strong>'+(m.errors?'未確定':yen(rounded(t.units)))+'</strong></td><td>—</td></tr>').join('');
+ $('grandTotal').innerHTML='<div><strong style="font-size:19px">全従業員の合計</strong><div class="small">控除前の給与計算額 ／ 各人の月額を合計'+(m.missingSalary?' ／ 月給未入力の人を除く':'')+'</div></div><strong>'+(m.errors?'未確定':yen(m.total))+'</strong>';
+}
+function renderSettings(){
+ $('settingsBody').innerHTML=data.employees.map(e=>'<tr data-id="'+e.id+'"><td><input class="name" data-setting="name" maxlength="100" aria-label="従業員名 '+esc(e.name)+'" value="'+esc(e.name)+'"></td><td>'+(isSalary(e)?'月給制（時給の登録なし）<div class="small">月給は勤務入力画面で月ごとに入力</div>':'<input type="number" data-setting="rate" min="1" max="100000" step="1" aria-label="基本時給 '+esc(e.name)+'" value="'+e.rate+'">')+'</td><td><button data-action="saveEmployee">変更を保存</button></td></tr>').join('');
+}
+function renderBackupInfo(){ $('backupInfo').textContent=data.lastBackupAt?'前回の保存操作：'+new Date(data.lastBackupAt).toLocaleString('ja-JP')+'（ファイルの存在はご自身で確認してください）':'ブラウザ内の保存だけでは、データを完全には守れません。'; }
+function switchMonth(m){if(!validMonth(m)){toast('年月は2000年1月〜2199年12月を選んでください。');$('month').value=data.ui.month;return;}data.ui.month=m;ensureMonth(m);ensurePerson();save();renderSelectors();if(tab==='work')renderWork();else if(tab==='summary')renderSummary();}
+function downloadText(text,filename,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+function stamp(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+String(d.getSeconds()).padStart(2,'0');}
+function backup(prefix='給与計算バックアップ'){
+ try{downloadText(JSON.stringify(data,null,2),prefix+'-'+stamp()+'.json','application/json;charset=utf-8');data.lastBackupAt=new Date().toISOString();save();renderBackupInfo();toast('JSONの保存を開始しました。ダウンロード先を確認してください。');return true;}catch(e){alert('バックアップを開始できませんでした。ブラウザのダウンロード設定を確認してください。');return false;}
+}
+function csvCell(value){let s=String(value??'');if(/^[\s]*[=+\-@]/.test(s)||/^[\t\r\n]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
+function makeCsv(rows){return '\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')+'\r\n';}
+function summaryCsv(){
+ const m=calcMonth(data.months[data.ui.month]);const rows=[['対象年月','状態','従業員','基本時給（円）','出勤日数','実働時間','給与対象通常時間','給与対象深夜時間','通常給与（参考円）','深夜給与（参考円）','控除前の給与計算額（円）','注記','給与区分','月給（円）','月給の時給換算（円／時）']];
+ m.rows.forEach(({p,t})=>rows.push(isSalary(p)?[data.ui.month,t.errors.length?'入力エラーあり':'入力エラーなし',p.name,'',t.days,duration(t.actual),duration(t.paidNormal),duration(t.paidNight),'','',p.monthlySalary??'月給未入力','30分単位の計算対象時間で時給換算・月給未入力は合計に含めない','月給',p.monthlySalary??'',t.effectiveHourly===null?'':t.effectiveHourly.toFixed(2)]:[data.ui.month,m.errors?'未確定':'入力エラーなし',p.name,p.rate,t.days,duration(t.actual),duration(t.paidNormal),duration(t.paidNight),m.errors?'未確定':(t.normalUnits/240).toFixed(2),m.errors?'未確定':(t.nightUnits/240).toFixed(2),m.errors?'未確定':rounded(t.units),m.errors?'入力エラーあり。時間・日数は有効行のみ':'税・社会保険・交通費・時間外・休日割増等を含まない','時給','','']));
+ rows.push([data.ui.month,m.errors?'未確定':'入力エラーなし','全従業員合計','','','','','','','',m.errors?'未確定':m.total,'各人の月額を合計'+(m.missingSalary?'（月給未入力の人を除く）':''),'','','']);return makeCsv(rows);
+}
+function detailCsv(){
+ if(isSalary(person()))return salaryDetailCsv();
+ const p=person(),month=data.ui.month,mc=calcMonth(data.months[month]);const rows=[['対象年月','従業員','基本時給（円）','日付','曜日','出勤','退勤','メモ','実働時間','実通常時間','実深夜時間','給与対象通常時間','給与対象深夜時間','日額（参考円・月合計で四捨五入）','状態・エラー']];
+ for(let d=1;d<=daysIn(month);d++){const r=p.days[d]||blankRow(),c=calcDay(r,p.rate);rows.push([month,p.name,p.rate,month+'-'+String(d).padStart(2,'0'),weekdayNames[weekday(d)],r.start,r.end+(c.nextDay?'（翌日）':''),exportMemo(r),c.worked?duration(c.actual):'',c.worked?duration(c.normal):'',c.worked?duration(c.night):'',c.worked?duration(c.paidNormal):'',c.worked?duration(c.paidNight):'',mc.errors?'未確定':c.worked?(c.units/240).toFixed(2):'',c.errors.join(' / ')||(mc.errors?'月にエラーあり・未確定':'')]);}
+ const t=calcPerson(p);rows.push([month,p.name,p.rate,'月合計','','','','',duration(t.actual),'','',duration(t.paidNormal),duration(t.paidNight),mc.errors?'未確定':rounded(t.units),'控除前の給与計算額。税・社会保険・交通費・時間外・休日割増等を含まない']);return makeCsv(rows);
+}
+
+function salaryDetailCsv(){
+ const p=person(),t=calcPerson(p),month=data.ui.month;
+ const rows=[['対象年月','従業員','給与区分','日付','出勤','退勤','実働時間','計算対象通常時間','計算対象深夜時間','メモ','月給（円）','時給換算（円／時）','状態']];
+ for(let d=1;d<=daysIn(month);d++){const r=p.days[d]||blankRow(),c=calcDay(r,null);rows.push([month,p.name,'月給',month+'-'+String(d).padStart(2,'0'),r.start,r.end+(c.nextDay?'（翌日）':''),c.worked?duration(c.actual):'',c.worked?duration(c.paidNormal):'',c.worked?duration(c.paidNight):'',exportMemo(r),'','',c.errors.join(' / ')]);}
+ rows.push([month,p.name,'月給','月合計','','',duration(t.actual),duration(t.paidNormal),duration(t.paidNight),'',p.monthlySalary??'',t.effectiveHourly===null?'':t.effectiveHourly.toFixed(2),t.errors.length?'入力エラーあり':p.monthlySalary===null?'月給未入力':t.actual===0?'勤務時刻未入力':'30分単位の計算対象時間で時給換算']);
+ return makeCsv(rows);
+}
+function salaryDetailPrint(){
+ const p=person(),t=calcPerson(p);let rows='';
+ for(let d=1;d<=daysIn(data.ui.month);d++){const r=p.days[d]||blankRow(),c=calcDay(r,null);rows+='<tr>'+[d+'('+weekdayNames[weekday(d)]+')',esc(r.start),esc(r.end)+(c.nextDay?'<br>翌日':''),c.worked?duration(c.actual):'—',c.worked?'通常 '+duration(c.paidNormal)+'<br>深夜 '+duration(c.paidNight)+'<br>'+c.paidStart+'〜'+c.paidEnd:'—','月給制',esc(exportMemo(r)).replace(/\n/g,'<br>')+(c.errors.length?'<br>'+c.errors.map(esc).join('<br>'):'')].map(v=>'<td>'+v+'</td>').join('')+'</tr>';}
+ return '<h1>勤務明細　'+monthLabel(data.ui.month)+'</h1><h2>'+esc(p.name)+'（月給制）</h2><p class="print-total">月給：'+salaryValue(p)+' ／ 時給換算：'+hourlyEquivalent(t)+'</p><p>時給換算＝月給÷計算対象時間。全員共通で出勤は30分単位で切り上げ、退勤は切り捨てます。'+(t.errors.length?'入力エラーあり：実働時間は有効な行のみ。時給換算は未確定です。':'')+'</p><table class="detail-table"><thead><tr>'+['日付','出勤','退勤','実働','通常・深夜（30分単位）','給与区分','メモ／エラー'].map(v=>'<th>'+v+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody><tfoot>'+personTotalMarkup(t,!!t.errors.length)+'</tfoot></table>';
+}
+
+function printNote(){return '<p class="print-note">時給制の店舗指定ルール：出勤切り上げ・退勤切り捨て（各30分単位・全員共通）／深夜22:00〜翌5:00の時給は基本時給×1.25の1円未満切り捨て／月合計で1円未満四捨五入。税金・社会保険料・交通費・時間外・休日割増等は含みません。法令適合性を保証するものではありません。</p>';}
+function printMarkup(kind){
+ const m=calcMonth(data.months[data.ui.month]),title=monthLabel(data.ui.month),status=m.errors?'<p class="print-error">未確定：月内に入力エラー '+m.errors+'行。金額は未確定。時間・日数は有効行のみの参考値です。</p>':'<p class="print-note">入力エラーなし（未入力日は勤務なし）</p>';
+ if(kind==='summary'){
+  const rows=m.rows.map(({p,t})=>isSalary(p)?salarySummaryRow(p,t,m):'<tr>'+[esc(p.name)+'<br>'+yen(p.rate),t.days+'日',duration(t.actual),duration(t.paidNormal),duration(t.paidNight),m.errors?'未確定':exactYen(t.normalUnits),m.errors?'未確定':exactYen(t.nightUnits),m.errors?'未確定':yen(rounded(t.units)),'—'].map(v=>'<td>'+v+'</td>').join('')+'</tr>').join('');
+  return '<h1>給与一覧　'+title+'</h1>'+status+'<table><thead><tr>'+['従業員／給与区分','出勤日数','実働時間','通常時間','深夜時間','通常給与','深夜給与','月額','月給の時給換算'].map(v=>'<th>'+v+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table><p class="print-total">全従業員合計：'+(m.errors?'未確定':yen(m.total))+(m.missingSalary?'（月給未入力の人を除く）':'')+'</p><p class="print-note">通常・深夜時間は出勤切り上げ・退勤切り捨て（各30分単位）後。時給換算＝月給÷計算対象時間。</p>'+printNote();
+ }
+ if(isSalary(person()))return salaryDetailPrint();
+ const p=person(),t=calcPerson(p);let rows='';
+ for(let d=1;d<=daysIn(data.ui.month);d++){const r=p.days[d]||blankRow(),c=calcDay(r,p.rate);rows+='<tr>'+[d+'('+weekdayNames[weekday(d)]+')',esc(r.start),esc(r.end)+(c.nextDay?'<br>翌日':''),c.errors.length?'エラー':c.worked?duration(c.actual):'—',c.worked?'通常 '+duration(c.paidNormal)+'<br>深夜 '+duration(c.paidNight)+'<br>計算上 '+c.paidStart+'〜'+c.paidEnd:'—',m.errors?'未確定':c.worked?exactYen(c.units):'—',esc(exportMemo(r)).replace(/\n/g,'<br>')+(c.errors.length?'<br><span class="print-error">'+c.errors.map(esc).join('<br>')+'</span>':'')].map(s=>'<td>'+s+'</td>').join('')+'</tr>';}
+ return '<h1>勤務明細　'+title+'</h1><h2>'+esc(p.name)+'　基本時給 '+yen(p.rate)+'</h2>'+status+'<p class="print-note">出勤 '+t.days+'日 ／ 実働 '+duration(t.actual)+' ／ 対象通常 '+duration(t.paidNormal)+' ／ 対象深夜 '+duration(t.paidNight)+'</p><p class="print-total">控除前の給与計算額：'+(m.errors?'未確定':yen(rounded(t.units)))+'</p><table class="detail-table"><colgroup><col style="width:8%"><col style="width:9%"><col style="width:9%"><col style="width:13%"><col style="width:23%"><col style="width:14%"><col style="width:24%"></colgroup><thead><tr>'+['日付','出勤','退勤','実働','給与対象時間','日額※','メモ／エラー'].map(s=>'<th>'+s+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody><tfoot>'+personTotalMarkup(t,!!m.errors)+'</tfoot></table><p class="print-note">※日額は小数第2位までの参考表示。内部の端数を保持し、月合計で四捨五入。</p>'+printNote();
+}
+// オフラインで日本語を描画し、A4のPDFとして直接保存する。
+const PDF_W=1654,PDF_H=2339,PDF_PAD=80,PDF_INNER=1494;
+const PDF_FONT='"Yu Gothic", "Meiryo", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif';
+let pdfExportBusy=false;
+function pdfText(ctx,text,x,y,maxWidth,size=28,color='#20372d',weight='400',align='left'){
+ const original=String(text??'');let shown=original,fontSize=size;
+ ctx.textBaseline='alphabetic';ctx.textAlign=align;ctx.fillStyle=color;
+ ctx.font=weight+' '+fontSize+'px '+PDF_FONT;
+ while(ctx.measureText(shown).width>maxWidth&&fontSize>22){fontSize--;ctx.font=weight+' '+fontSize+'px '+PDF_FONT;}
+ if(ctx.measureText(shown).width>maxWidth){while(shown.length&&ctx.measureText(shown+'…').width>maxWidth)shown=shown.slice(0,-1);shown+='…';}
+ ctx.fillText(shown,x,y);return shown!==original;
+}
+function pdfLine(ctx,x1,y1,x2,y2,color='#d7e1da'){
+ ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+}
+function pdfBase(month,title,subtitle,page,pages,created){
+ const canvas=document.createElement('canvas');canvas.width=PDF_W;canvas.height=PDF_H;
+ const ctx=canvas.getContext('2d');if(!ctx)throw new Error('PDF用の画面を作成できませんでした。');
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,PDF_W,PDF_H);
+ ctx.fillStyle='#193d30';ctx.fillRect(0,0,PDF_W,260);
+ pdfText(ctx,'給与計算  /  月次記録',PDF_PAD,65,1050,26,'#dcebe1','700');
+ pdfText(ctx,title,PDF_PAD,140,PDF_INNER,52,'#fff','700');
+ pdfText(ctx,subtitle,PDF_PAD,210,PDF_INNER,30,'#edf5f0');
+ pdfLine(ctx,PDF_PAD,2280,PDF_W-PDF_PAD,2280);
+ pdfText(ctx,monthLabel(month)+'  /  '+created,PDF_PAD,2320,1200,23,'#586b62');
+ pdfText(ctx,page+' / '+pages,PDF_W-PDF_PAD,2320,180,24,'#586b62','400','right');
+ return {canvas,ctx};
+}
+function pdfCard(ctx,x,y,width,label,value,sub=''){
+ ctx.fillStyle='#edf5f0';ctx.fillRect(x,y,width,175);
+ pdfText(ctx,label,x+24,y+44,width-48,27,'#586b62');
+ pdfText(ctx,value,x+24,y+110,width-48,45,'#193d30','700');
+ if(sub)pdfText(ctx,sub,x+24,y+151,width-48,24,'#586b62');
+}
+function pdfTableHeader(ctx,y,widths,labels){
+ ctx.fillStyle='#27664d';ctx.fillRect(PDF_PAD,y,PDF_INNER,58);
+ let x=PDF_PAD;labels.forEach((label,i)=>{pdfText(ctx,label,x+12,y+38,widths[i]-24,26,'#fff','700');x+=widths[i];});
+}
+function pdfEmployeeAmount(p,t,hasErrors){return isSalary(p)?salaryValue(p):hasErrors?'未確定':yen(rounded(t.units));}
+function pdfSummaryPage(month,m,page,pages,created,rows){
+ const {canvas,ctx}=pdfBase(month,'給与・勤務  月次一覧',monthLabel(month)+'  /  全員分の給与と勤務時間（控除前）',page,pages,created);
+ const count=m.rows.reduce((sum,r)=>sum+r.t.days,0),minutes=m.rows.reduce((sum,r)=>sum+r.t.paidNormal+r.t.paidNight,0);
+ pdfCard(ctx,PDF_PAD,305,700,'給与合計（入力済み分）',m.errors?'未確定':yen(m.total),m.missingSalary?'月給未入力の人は合計に含みません':'各人の月額を合計');
+ pdfCard(ctx,804,305,365,'延べ出勤日数',count+'日',m.errors?'有効な行のみ':'対象月の入力分');
+ pdfCard(ctx,1193,305,381,'計算対象時間',duration(minutes),'全員共通の30分単位');
+ pdfText(ctx,m.errors?'入力エラー '+m.errors+'行：給与・集計は未確定です。':'入力エラーなし',PDF_PAD,545,PDF_INNER,29,m.errors?'#a32929':'#27664d','700');
+ const widths=[250,110,210,230,300,394],labels=['氏名','日数','実働時間','計算対象時間','給与（控除前）','給与区分 / 時給換算'];
+ pdfTableHeader(ctx,585,widths,labels);
+ rows.forEach(({p,t},i)=>{
+  const y=643+i*100;ctx.fillStyle=i%2?'#f1f6f2':'#fff';ctx.fillRect(PDF_PAD,y,PDF_INNER,100);
+  const values=[p.name,t.days+'日',duration(t.actual),duration(t.paidNormal+t.paidNight),pdfEmployeeAmount(p,t,!!m.errors),isSalary(p)?'月給 / '+hourlyEquivalent(t):'時給 '+yen(p.rate)];
+  let x=PDF_PAD;values.forEach((v,j)=>{pdfText(ctx,v,x+12,y+57,widths[j]-24,j===4?31:28,j===4?'#193d30':'#20372d',j===0||j===4?'700':'400');x+=widths[j];});
+  pdfLine(ctx,PDF_PAD,y+100,PDF_W-PDF_PAD,y+100);
+ });
+ const y=643+rows.length*100+70;
+ pdfText(ctx,'計算ルール',PDF_PAD,y,PDF_INNER,31,'#193d30','700');
+ const notes=[
+  '出勤は30分単位で切り上げ、退勤は30分単位で切り捨て（全員共通）。',
+  '実働時間は入力どおり。計算対象時間が0分になる短い勤務もあります。',
+  '時給制：22時〜翌5時の時給は、基本時給×1.25の1円未満を切り捨て。',
+  '月給制：月給は固定。時給換算は「月給 ÷ 計算対象時間」です。',
+  '税金・社会保険料・交通費等の控除・加算前の金額です。'
+ ];
+ notes.forEach((line,i)=>pdfText(ctx,line,PDF_PAD,y+50+i*44,PDF_INNER,26,'#586b62'));
+ pdfText(ctx,'この後に、従業員ごとの1か月分の勤務表が続きます。',PDF_PAD,y+310,PDF_INNER,27,'#193d30','700');
+ return canvas;
+}
+function pdfDetailPage(month,p,m,page,pages,created){
+ const t=calcPerson(p),salaried=isSalary(p),{canvas,ctx}=pdfBase(month,p.name+'  勤務表・給与明細',monthLabel(month)+'  /  '+(salaried?'月給制':'基本時給 '+yen(p.rate)+'  ・  深夜時給 '+yen(nightRate(p.rate))),page,pages,created);
+ const amount=pdfEmployeeAmount(p,t,salaried?!!t.errors.length:!!m.errors);
+ pdfCard(ctx,PDF_PAD,300,482,salaried?'この月の月給':'月の給与合計（控除前）',amount,salaried?'時給換算 '+hourlyEquivalent(t):'月合計で1円未満を四捨五入');
+ pdfCard(ctx,586,300,482,'計算対象時間',duration(t.paidNormal+t.paidNight),'通常 '+duration(t.paidNormal)+' / 深夜 '+duration(t.paidNight));
+ pdfCard(ctx,1092,300,482,'入力どおりの実働時間',duration(t.actual),'出勤 '+t.days+'日'+(t.errors.length?' / エラー '+t.errors.length+'行':''));
+ pdfText(ctx,'出勤は30分切り上げ、退勤は30分切り捨て。入力した時刻も一緒に記録します。',PDF_PAD,530,PDF_INNER,27,'#586b62');
+ const widths=[120,150,150,290,180,240,364],labels=['日付','出勤','退勤','計算上の勤務','計算時間','日額（参考）','メモ'];
+ const tableTop=570,rowHeight=46;pdfTableHeader(ctx,tableTop,widths,labels);
+ for(let day=1;day<=daysIn(month);day++){
+  const r=p.days[day]||{start:'',end:'',breaks:[],memo:''},c=calcDay(r,p.rate),w=new Date(Number(month.slice(0,4)),Number(month.slice(5))-1,day).getDay();
+  const y=tableTop+58+(day-1)*rowHeight,filled=c.worked||c.errors.length;
+  ctx.fillStyle=c.errors.length?'#fff0ee':day%2===0?'#f2f6f3':'#fff';ctx.fillRect(PDF_PAD,y,PDF_INNER,rowHeight);
+  const values=[day+'('+weekdayNames[w]+')',filled?(normalized(r.start)||'—'):'—',filled?(normalized(r.end)||'—')+(c.nextDay?' 翌':''):'—',c.errors.length?'入力エラー':c.worked?(c.paidRangeEmpty?'対象0分':c.paidStart+'〜'+c.paidEnd):'—',c.worked?duration(c.paidNormal+c.paidNight):'—',c.errors.length?'未確定':c.worked?(salaried?'月給制':m.errors?'未確定':exactYen(c.units)):'—',c.errors.length?c.errors.join(' / '):exportMemo(r)];
+  let x=PDF_PAD;values.forEach((v,j)=>{pdfText(ctx,v,x+12,y+32,widths[j]-24,27,j===0?(w===0?'#a32929':w===6?'#285896':'#20372d'):c.errors.length?'#a32929':'#20372d',j===5?'700':'400');x+=widths[j];});
+  pdfLine(ctx,PDF_PAD,y+rowHeight,PDF_W-PDF_PAD,y+rowHeight);
+ }
+ const end=tableTop+58+daysIn(month)*rowHeight;
+ ctx.fillStyle='#dcebe1';ctx.fillRect(PDF_PAD,end+24,PDF_INNER,72);
+ pdfText(ctx,'合計  出勤 '+t.days+'日 / 計算対象 '+duration(t.paidNormal+t.paidNight),PDF_PAD+18,end+70,1000,29,'#193d30','700');
+ pdfText(ctx,amount,PDF_W-PDF_PAD-18,end+70,420,35,'#193d30','700','right');
+ const notes=[salaried?'月給は固定額。時給換算は、月給を30分単位の計算対象時間で割った参考値です。':'日額は小数第2位までの参考表示。月額は日額の表示端数を丸めず合計して計算します。',t.errors.length?'入力エラーのある行は、勤務時間の集計に含めていません。':'長いメモは末尾を「…」で表示します。給与は控除前の金額です。'];
+ notes.forEach((line,i)=>pdfText(ctx,line,PDF_PAD,end+140+i*38,PDF_INNER,25,t.errors.length&&i===1?'#a32929':'#586b62'));
+ return canvas;
+}
+function pdfJpegPage(canvas){
+ const raw=atob(canvas.toDataURL('image/jpeg',0.96).split(',')[1]),bytes=new Uint8Array(raw.length);
+ for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+ return {bytes,width:canvas.width,height:canvas.height};
+}
+function buildPdfBlob(pages){
+ if(!pages.length)throw new Error('保存するページがありません。');
+ const encoder=new TextEncoder(),chunks=[],offsets=[0];let length=0;
+ const push=value=>{const bytes=typeof value==='string'?encoder.encode(value):value;chunks.push(bytes);length+=bytes.length;};
+ const object=(id,body)=>{offsets[id]=length;push(id+' 0 obj\n');if(Array.isArray(body))body.forEach(push);else push(body);push('\nendobj\n');};
+ push('%PDF-1.4\n%offline-payroll\n');
+ object(1,'<< /Type /Catalog /Pages 2 0 R >>');
+ object(2,'<< /Type /Pages /Count '+pages.length+' /Kids ['+pages.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] >>');
+ pages.forEach((page,i)=>{
+  const id=3+i*3,commands='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ';
+  object(id,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 '+(id+1)+' 0 R >> >> /Contents '+(id+2)+' 0 R >>');
+  object(id+1,['<< /Type /XObject /Subtype /Image /Width '+page.width+' /Height '+page.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+page.bytes.length+' >>\nstream\n',page.bytes,'\nendstream']);
+  object(id+2,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'\nendstream');
+ });
+ const count=3+pages.length*3,xref=length;
+ push('xref\n0 '+count+'\n0000000000 65535 f \n');
+ for(let i=1;i<count;i++)push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+ push('trailer\n<< /Size '+count+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
+ return new Blob(chunks,{type:'application/pdf'});
+}
+function downloadPdfBlob(blob,filename){
+ const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+async function exportMonthlyPdf(scope='all'){
+ if(pdfExportBusy)return;pdfExportBusy=true;
+ const buttons=['monthPdfBtn','summaryPdfBtn','detailPdfBtn'].map($),previous=buttons.map(b=>b.textContent);
+ buttons.forEach(b=>{b.disabled=true;b.textContent='PDFを作成中…';});
+ try{
+  // 保存時点の対象月・時刻・給与を固定し、作成中の画面変更から切り離す。
+  if(isSalary(person())&&saveMonthlySalary()===false)throw new Error('月給の入力を確認してください。');
+  const month=data.ui.month,snapshot=clone(data.months[month]),selected=data.ui.employee,m=calcMonth(snapshot),all=scope==='all';
+  if(!all&&!snapshot.people[selected])throw new Error('従業員を選択してください。');
+  const detailRows=all?m.rows:[m.rows.find(r=>r.id===selected)],summaryChunks=all?Array.from({length:Math.ceil(m.rows.length/10)},(_,i)=>m.rows.slice(i*10,(i+1)*10)):[];
+  const totalPages=summaryChunks.length+detailRows.length,created=new Date().toLocaleString('ja-JP'),images=[];let page=0;
+  if(document.fonts?.ready)await document.fonts.ready;
+  for(const rows of summaryChunks){images.push(pdfJpegPage(pdfSummaryPage(month,m,++page,totalPages,created,rows)));await new Promise(resolve=>setTimeout(resolve,0));}
+  for(const {p} of detailRows){images.push(pdfJpegPage(pdfDetailPage(month,p,m,++page,totalPages,created)));await new Promise(resolve=>setTimeout(resolve,0));}
+  const filename='給与勤務表-'+month+'-'+(all?'全員':snapshot.people[selected].name.replace(/[\\/:*?"<>|]/g,'_'))+'.pdf';
+  downloadPdfBlob(buildPdfBlob(images),filename);toast('PDFの保存を開始しました。ダウンロード先を確認してください。');
+ }catch(error){alert('PDFを保存できませんでした：'+error.message);}
+ finally{buttons.forEach((b,i)=>{b.disabled=false;b.textContent=previous[i];});pdfExportBusy=false;}
+}
+
+let printKind='summary';
+function doPrint(kind){printKind=kind;$('printArea').innerHTML=printMarkup(kind);window.print();}
+function readyRestore(raw){const checked=validateData(raw);pendingRestore=checked;retreatStarted=false;$('retreatCheck').checked=false;$('retreatCheck').disabled=true;$('restoreConfirm').disabled=true;const keys=Object.keys(checked.months).sort();$('restoreInfo').textContent='従業員：'+checked.employees.length+'名\n'+checked.employees.map(e=>e.name).join('、')+'\n保存月：'+keys.length+'か月'+(keys.length?'（'+keys[0]+'〜'+keys[keys.length-1]+'）':'')+'\n最終更新：'+(checked.updatedAt||'不明')+'\nこのPCの現在のデータ：'+data.employees.length+'名・'+Object.keys(data.months).length+'か月';$('restoreDialog').showModal();}
+function finishRestore(){
+ if(!pendingRestore||!retreatStarted||!$('retreatCheck').checked)return;
+ if(!confirm('確認したバックアップの内容で、現在の全データを置き換えます。よろしいですか？'))return;
+ const next=clone(pendingRestore);correctStaffName(next);ensureSalaryStaff(next);next.updatedAt=new Date().toISOString();
+ try{localStorage.setItem(KEY,JSON.stringify(next));}catch(e){alert('保存できないため復元を中止しました。現在のデータは変更していません。ブラウザの保存設定・空き容量を確認してください。');return;}
+ endResetHistory.clear();data=next;storageBlocked=false;storageConflict=false;rawBroken=null;ensureMonth(data.ui.month);ensurePerson();pendingRestore=null;$('restoreDialog').close();save();renderBackupInfo();showTab('work');toast('復元しました。対象年月を選んで確認してください。');
+}
+
+function salarySummaryRow(p,t,m){return '<tr><td>'+esc(p.name)+'<br><span class="small muted">月給制</span></td><td>'+t.days+'日</td><td>'+duration(t.actual)+'</td><td>'+duration(t.paidNormal)+'<br><small>30分単位</small></td><td>'+duration(t.paidNight)+'<br><small>30分単位</small></td><td>—</td><td>—</td><td><strong>'+salaryValue(p)+'</strong></td><td>'+hourlyEquivalent(t)+'</td></tr>';}
+function saveMonthlySalary(){
+ if(!isSalary(person()))return true;
+ const input=$('salaryInput'),raw=input.value.trim(),value=raw===''?null:Number(raw);
+ if(input.validity?.badInput||!validSalary(value)){input.setAttribute('aria-invalid','true');toast('月給は0〜100,000,000円の整数で入力してください。');return false;}
+ input.setAttribute('aria-invalid','false');person().monthlySalary=value;save();renderWorkStats();return true;
+}
+$('salaryInput').addEventListener('change',saveMonthlySalary);
+$('salaryInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();saveMonthlySalary();}});
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+$('resetEndsBtn').addEventListener('click',resetEndTimes);
+$('undoResetBtn').addEventListener('click',undoEndReset);
+$('month').addEventListener('change',e=>switchMonth(e.target.value));
+function moveMonth(delta){const [y,m]=data.ui.month.split('-').map(Number),d=new Date(y,m-1+delta,1);switchMonth(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+$('prevMonth').addEventListener('click',()=>moveMonth(-1));$('nextMonth').addEventListener('click',()=>moveMonth(1));
+$('employee').addEventListener('change',e=>{data.ui.employee=e.target.value;ensurePerson();save();renderSelectors();renderWork();});
+$('workBody').addEventListener('input',e=>{
+ const el=e.target;if(!el.matches('input[data-field]'))return;
+ // 4桁の時刻は入力直後からコロン付きで表示する。
+ if(el.matches('input.time')&&/^\s*[0-9０-９]{4}\s*$/.test(el.value)&&Number.isFinite(parseTime(el.value)))el.value=normalized(el.value);
+ const tr=el.closest('tr'),day=tr.dataset.day,r=rowFor(day),f=el.dataset.field;
+ if(f==='breakStart'||f==='breakEnd'){const i=Number(el.dataset.break);while(r.breaks.length<=i)r.breaks.push({start:'',end:''});r.breaks[i][f==='breakStart'?'start':'end']=el.value;}else {r[f]=el.value;if(f==='start'){r.startPreset=false;r.endReset=false;}if(f==='end'&&nonempty(el.value))r.endReset=false;}
+ save();updateRowResult(tr,day);
+});
+function commitTimeInput(el){
+ if(!el.matches('input.time'))return;const value=normalized(el.value);if(value===el.value)return;el.value=value;const r=rowFor(el.closest('tr').dataset.day),f=el.dataset.field;if(f==='start'||f==='end')r[f]=value;else r.breaks[Number(el.dataset.break)][f==='breakStart'?'start':'end']=value;save();
+}
+$('workBody').addEventListener('focusout',e=>commitTimeInput(e.target));
+function handleTimeKeydown(e){
+ if(e.isComposing||e.keyCode===229||e.ctrlKey||e.metaKey||e.altKey||!e.target.matches('input.time'))return;
+ if(e.key==='Backspace'){
+  if(e.target.value!=='')return;
+  e.preventDefault();if(e.repeat)return;
+  const fields=Array.from($('workBody').querySelectorAll('input.time')),index=fields.indexOf(e.target),previous=index>0?fields[index-1]:null;
+  if(previous){previous.focus();previous.setSelectionRange(previous.value.length,previous.value.length);}
+  return;
+ }
+ if(e.key!=='Enter')return;
+ e.preventDefault();if(e.repeat)return;
+ commitTimeInput(e.target);
+ const fields=Array.from($('workBody').querySelectorAll('input.time')),index=fields.indexOf(e.target),next=fields[index+(e.shiftKey?-1:1)];
+ if(next){next.focus();next.select();}else if(!e.shiftKey)toast('この月の最後の入力欄です。「月別集計」で確認してください。');
+}
+$('workBody').addEventListener('keydown',handleTimeKeydown);
+$('workBody').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-action]');if(!b)return;const tr=b.closest('tr'),day=tr.dataset.day,action=b.dataset.action;
+ if(action==='clearDay'){if(!confirm(day+'日の出勤・退勤・メモを消去しますか？'))return;delete person().days[day];}
+ else if(action==='clearLegacyBreaks'){if(!confirm(day+'日の旧版の休憩記録を消去し、控除なしで再計算しますか？'))return;rowFor(day).breaks=[];}
+ else return;
+ save();tr.outerHTML=renderRow(Number(day));renderWorkStats();
+});
+$('summaryBody').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){data.ui.employee=b.dataset.open;save();showTab('work');const errs=calcPerson(person()).errors;if(errs.length)document.querySelector('tr[data-day="'+errs[0].day+'"]').scrollIntoView({block:'center',behavior:'smooth'});}});
+$('settingsBody').addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="saveEmployee"]');if(!b)return;const tr=b.closest('tr'),employee=data.employees.find(x=>x.id===tr.dataset.id),name=tr.querySelector('[data-setting="name"]').value.trim(),rate=isSalary(employee)?null:Number(tr.querySelector('[data-setting="rate"]').value);
+ if(isSalary(employee)){if(!name||name.length>100){alert('名前は1〜100文字で入力してください。');return;}employee.name=name;save();renderSettings();toast('名前を保存しました。作成済み月は据え置きです。');return;}
+ if(!name||name.length>100||!Number.isInteger(rate)||rate<1||rate>100000){alert('名前と1〜100,000円の整数の時給を入力してください。');return;}
+ if(employee.name===name&&employee.rate===rate){toast('変更はありません。');return;}
+ if(!confirm(name+'・時給'+yen(rate)+'に変更します。新しく作成する月に適用されます。作成済みの月は変わりません。よろしいですか？'))return;
+ employee.name=name;employee.rate=rate;save();renderSettings();toast('従業員設定を保存しました。作成済み月は据え置きです。');
+});
+$('addEmployeeBtn').addEventListener('click',()=>{
+ if(data.employees.length>=200){alert('従業員は200名までです。');return;}
+ const s=prompt('追加する従業員の名前を入力してください。');if(s===null)return;const name=s.trim();if(!name||name.length>100){alert('名前は1〜100文字で入力してください。');return;}
+ const r=prompt('基本時給を円で入力してください。','1050');if(r===null)return;const rate=Number(r);if(!Number.isInteger(rate)||rate<1||rate>100000){alert('時給は1〜100,000円の整数で入力してください。');return;}
+ if(!confirm(name+'・時給'+yen(rate)+'で追加しますか？'))return;
+ let id;do{id='e'+Date.now().toString(36)+Math.random().toString(36).slice(2,9);}while(data.employees.some(e=>e.id===id));data.employees.push({id,name,rate});data.months[data.ui.month].people[id]={name,rate,days:{}};save();renderSettings();toast('従業員を追加しました。現在の月にも登録しました。');
+});
+$('editMonthRate').addEventListener('click',()=>{$('rateDialogInfo').textContent=monthLabel(data.ui.month)+'・'+person().name+'（現在 '+yen(person().rate)+'）';$('rateInput').value=person().rate;$('rateDialog').showModal();});
+$('rateCancel').addEventListener('click',()=>$('rateDialog').close());
+$('rateSave').addEventListener('click',()=>{const r=Number($('rateInput').value);if(!Number.isInteger(r)||r<1||r>100000){alert('1〜100,000円の整数を入力してください。');return;}if(r!==person().rate&&!confirm(monthLabel(data.ui.month)+'の時給を'+yen(r)+'に変更し、給与を再計算しますか？'))return;person().rate=r;save();$('rateDialog').close();renderSelectors();renderWork();});
+$('backupBtn').addEventListener('click',()=>backup());$('backupBottomBtn').addEventListener('click',()=>backup());
+$('rawRecoveryBtn').addEventListener('click',()=>{if(rawBroken!==null)downloadText(rawBroken,'給与計算-読込不良データ退避-'+stamp()+'.json','application/json;charset=utf-8');});
+$('restoreBtn').addEventListener('click',()=>alert('公開デモではバックアップ復元を無効にしています。')); 
+$('restoreFile').addEventListener('demo-disabled-change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw new Error('ファイルは10MB以下にしてください。');readyRestore(JSON.parse(await file.text()));}catch(err){alert('復元できません：'+err.message);pendingRestore=null;}});
+$('retreatBtn').addEventListener('click',()=>{let ok=false;try{if(rawBroken!==null){downloadText(rawBroken,'給与計算-読込不良データ退避-'+stamp()+'.json','application/json;charset=utf-8');ok=true;}else ok=backup('給与計算-復元前退避');}catch(e){alert('退避保存に失敗しました。');}if(ok){retreatStarted=true;$('retreatCheck').disabled=false;}});
+$('retreatCheck').addEventListener('change',()=>$('restoreConfirm').disabled=!retreatStarted||!$('retreatCheck').checked);
+$('restoreCancel').addEventListener('click',()=>{$('restoreDialog').close();pendingRestore=null;});$('restoreConfirm').addEventListener('click',finishRestore);
+$('summaryCsvBtn').addEventListener('click',()=>downloadText(summaryCsv(),'給与一覧-'+data.ui.month+'.csv','text/csv;charset=utf-8'));
+$('detailCsvBtn').addEventListener('click',()=>downloadText(detailCsv(),'勤務明細-'+data.ui.month+'-'+person().name.replace(/[\\/:*?"<>|]/g,'_')+'.csv','text/csv;charset=utf-8'));
+$('monthPdfBtn').addEventListener('click',()=>exportMonthlyPdf('all'));
+$('summaryPdfBtn').addEventListener('click',()=>exportMonthlyPdf('all'));
+$('detailPdfBtn').addEventListener('click',()=>exportMonthlyPdf('person'));
+$('summaryPrintBtn').addEventListener('click',()=>doPrint('summary'));$('detailPrintBtn').addEventListener('click',()=>doPrint('detail'));
+window.addEventListener('beforeprint',()=>{$('printArea').innerHTML=printMarkup(printKind);});
+window.addEventListener('storage',e=>{if(e.key===KEY){storageConflict=true;storageError('別のタブでデータが変更されました。自動保存を停止しています。この画面をバックアップ保存してから再読込してください。');}});
+window.addEventListener('beforeunload',e=>{if(!persisted){e.preventDefault();e.returnValue='保存できていない内容があります。バックアップ保存を確認してください。';}});
+$('helpBtn').addEventListener('click',()=>{$('help').open=true;$('help').scrollIntoView({behavior:'smooth',block:'start'});});
+showTab('work');renderBackupInfo();if(bootMessage)storageError(bootMessage);else save();
+</script>
+</body>
+</html>
